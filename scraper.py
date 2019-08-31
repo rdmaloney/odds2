@@ -1,24 +1,72 @@
-# This is a template for a Python scraper on morph.io (https://morph.io)
-# including some code snippets below that you should find helpful
+import requests
+import pandas as pd
+import numpy as np
+import sqlite3
+from bs4 import BeautifulSoup
+import string
+import re
+import os
+import time
+from math import *
 
-# import scraperwiki
-# import lxml.html
-#
-# # Read in a page
-# html = scraperwiki.scrape("http://foo.com")
-#
-# # Find something on the page using css selectors
-# root = lxml.html.fromstring(html)
-# root.cssselect("div[align='left']")
-#
-# # Write out to the sqlite database using scraperwiki library
-# scraperwiki.sqlite.save(unique_keys=['name'], data={"name": "susan", "occupation": "software developer"})
-#
-# # An arbitrary query against the database
-# scraperwiki.sql.select("* from data where 'name'='peter'")
+links = []
+alphabets = sorted(set(string.ascii_lowercase))
 
-# You don't have to do things with the ScraperWiki and lxml libraries.
-# You can use whatever libraries you want: https://morph.io/documentation/python
-# All that matters is that your final data is written to an SQLite database
-# called "data.sqlite" in the current working directory which has at least a table
-# called "data".
+f1 = []
+f2 = []
+f1_odds = []
+f2_odds = []
+
+def frac(express):
+    if express == 'EVS':
+
+        return '1'
+    else:
+        tokens = express.split('/')
+        t1 = int(tokens[0])
+        t2 = int(tokens[1])
+        
+        return str(t1 / t2)
+
+def safe_eval(expr):
+    try:
+        return round(eval(expr), 2)
+    except:
+        return expr
+    
+def scrape_data():
+    data = requests.get("https://sports.williamhill.com/betting/en-gb/ufc")
+    soup = BeautifulSoup(data.text, 'html.parser')
+    divs = soup.findAll("div", {"class": "event"})
+    for div in divs:
+        link = div.findAll('a')[0]
+        names = link.findAll('span')
+        p1 = names[0].text
+        p2 = names[1].text
+        buttons_having_odds = div.findAll('button')
+        p1_odds = safe_eval(buttons_having_odds[0]["data-odds"])
+        p2_odds = safe_eval(buttons_having_odds[1]["data-odds"])
+        f1.append(p1)
+        f2.append(p2)
+        f1_odds.append(p1_odds)
+        f2_odds.append(p2_odds)
+
+scrape_data()
+
+def create_df():
+    df = pd.DataFrame()
+    df["Fighter1"] = f1
+    df["Fighter1_Odds"] = f1_odds
+    df["Fighter2"] = f2
+    df["Fighter2_Odds"] = f2_odds
+
+    return df
+
+
+scrape_data()
+df = create_df()
+
+conn = sqlite3.connect('data.sqlite')
+df.to_sql('data', conn, if_exists='replace')
+print('Db successfully constructed and saved')
+conn.close()
