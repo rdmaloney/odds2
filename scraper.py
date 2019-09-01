@@ -26,18 +26,19 @@ def safe_eval(expr):
 
 
 def scrape_data():
-    data = requests.get("https://www.oddschecker.com/ufc-mma")
+    data = requests.get("https://www.paddypower.com/mixed-martial-arts")
     print(data.text)
     soup = BeautifulSoup(data.text, 'html.parser')
-    divs = soup.findAll("div", {"class": "fixtures module"})
+    divs = soup.findAll("div", {"class": "avb-item grid"})
     for div in divs:
         link = div.findAll('tr')[1]
-        names = link.findAll('p', {"class": "fixtures-bet-name beta footnote"})
+        names = link.findAll('span')
         p1 = names[0].text
         p2 = names[1].text
-        buttons_having_odds = div.findAll('span')
-        p1_odds = buttons_having_odds[0]
-        p2_odds = buttons_having_odds[1]
+        buttons_having_odds = div.findAll("div", {"class":"avb-item__box grid grid__cell-2-12")
+        button_odds = button_having_odds.findAll ('span')                                         
+        p1_odds = button_odds[0]
+        p2_odds = button_odds[1]
         f1.append(p1)
         f2.append(p2)
         f1_odds.append(p1_odds)
