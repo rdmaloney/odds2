@@ -35,7 +35,7 @@ def scrape_data():
         names = link.findAll('span')
         p1 = names[0].text
         p2 = names[1].text
-        buttons_having_odds = div.findAll("div", {"class":"avb-item__box grid grid__cell-2-12")
+        buttons_having_odds = div.findAll("div", {"class":"avb-item__box grid grid__cell-2-12"})
         button_odds = button_having_odds.findAll ('span')                                         
         p1_odds = button_odds[0]
         p2_odds = button_odds[1]
