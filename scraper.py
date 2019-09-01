@@ -27,6 +27,7 @@ def safe_eval(expr):
 
 def scrape_data():
     data = requests.get("https://www.oddschecker.com/ufc-mma")
+    print(data.text)
     soup = BeautifulSoup(data.text, 'html.parser')
     divs = soup.findAll("div", {"class": "fixtures module"})
     for div in divs:
