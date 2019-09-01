@@ -31,7 +31,7 @@ def scrape_data():
     divs = soup.findAll("div", {"class": "fixtures module"})
     for div in divs:
         link = div.findAll('tr')[1]
-        names = link.findAll('p', {"class": "fixtures-bet-name beta footnote")
+        names = link.findAll('p', {"class": "fixtures-bet-name beta footnote"})
         p1 = names[0].text
         p2 = names[1].text
         buttons_having_odds = div.findAll('span')
